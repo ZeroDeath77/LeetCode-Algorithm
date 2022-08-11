@@ -50,6 +50,43 @@ public:
     }
 };
 
+===================================================================================================================
+  class Solution {
+    int fn(int idx, int m, int n, vector<string>& strs, vector<vector<vector<int>>> &dp){
+        //base condition
+        if(idx == 0) return 0;
+        if(m == 0 and n == 0) return 0;
+        
+        if(dp[idx][m][n] != -1) return dp[idx][m][n];
+        
+        //count no. of zeros and ones
+        int zero = 0 , one = 0;
+        
+        for(auto &x : strs[idx-1]){
+            if(x == '0')
+                zero++;
+            else
+                one++;
+        }
+        
+        // can pick
+        if(zero <= m and one <= n) 
+            return dp[idx][m][n] = max(1+fn(idx-1, m-zero, n-one, strs, dp) , fn(idx-1, m, n, strs, dp));
+        // not pick
+        else
+            return dp[idx][m][n] = fn(idx-1, m, n, strs, dp);
+ 
+    }
+public:
+    int findMaxForm(vector<string>& strs, int m, int n) {
+        int len = strs.size();
+        /// 3D vector
+        vector<vector<vector<int>>> dp(len+1, vector<vector<int>>(m+1 , vector<int>(n+1, -1)));
+            
+        return  fn(len, m, n, strs, dp);
+    }
+};
+
 //Tabulation
 class Solution {
 public:
@@ -79,5 +116,70 @@ public:
         }
         
         return DP[strs.size()][m][n];
+    }
+};
+
+============================================================================================================
+  class Solution {
+public:
+    int findMaxForm(vector<string>& strs, int m, int n) {
+        int len = strs.size();
+        /// 3D vector
+        vector<vector<vector<int>>> dp(len+1, vector<vector<int>>(m+1 , vector<int>(n+1, 0)));
+        
+        for(int idx = 1 ;idx <= len; idx++){
+            for(int j = 0 ; j <= m ;j++){
+                for(int k = 0 ;k <= n;k++){
+                    if(m == 0 and n == 0) continue;
+                    int zero = 0 , one = 0;
+        
+                    for(auto &x : strs[idx-1]){
+                        if(x == '0')
+                            zero++;
+                        else
+                            one++;
+                    }
+                    if(zero <= j and one <= k)
+                        dp[idx][j][k] = max(1 + dp[idx-1][j-zero][k-one] , dp[idx-1][j][k]);
+                    else
+                        dp[idx][j][k] = dp[idx-1][j][k];
+                }
+            }
+        }
+    
+        return dp[len][m][n];
+    }
+};
+
+//Tabulation + SO
+class Solution {
+public:
+    int findMaxForm(vector<string>& strs, int m, int n) {
+        int len = strs.size();
+        
+        vector<vector<int>> prev(m+1 , vector<int>(n+1, 0)) , curr(m+1 , vector<int>(n+1, 0));
+        
+        for(int idx = 1 ;idx <= len; idx++){
+            for(int j = 0 ; j <= m ;j++){
+                for(int k = 0 ;k <= n;k++){
+                    if(m == 0 and n == 0) continue;
+                    int zero = 0 , one = 0;
+        
+                    for(auto &x : strs[idx-1]){
+                        if(x == '0')
+                            zero++;
+                        else
+                            one++;
+                    }
+                    if(zero <= j and one <= k)
+                        curr[j][k] = max(1 + prev[j-zero][k-one] , prev[j][k]);
+                    else
+                        curr[j][k] = prev[j][k];
+                }
+            }
+            prev = curr;
+        }
+    
+        return prev[m][n];
     }
 };
