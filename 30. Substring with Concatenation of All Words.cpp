@@ -45,46 +45,39 @@ public:
 class Solution {
 public:
     vector<int> findSubstring(string s, vector<string>& words) {
-        int n=words.size();
-        int w=words[0].size();
-        unordered_map<string,int>mp;
-        unordered_map<string,int>tmp;
-        
-        if(n*w>s.length())
-            return {};
-        
         vector<int>ans;
-        
-        for(auto word: words)
-            mp[word]++;
-        
-        for(int i=0;i<w;i++)
+        int len=s.length();
+        int wordLen=words[0].size();
+        int totWords=words.size();
+        int totSize=wordLen*totWords;
+        unordered_map<string,int>mp;
+        for(int j=0;j<words.size();j++)
         {
-            tmp.clear();
-            int found=0;
-            int left=i;
-            for(int j=i;j<=s.length()-w;j+=w)
+            mp[words[j]]++;
+        }
+        if(totSize>len)
+        {
+            return ans;
+        }
+        for(int i=0;i<=len-totSize;i++)
+        {
+            unordered_map<string,int>freq;
+            for(int j=i;j<i+totSize;j+=wordLen)
             {
-                string wrd=s.substr(j,w);
-                if(mp.find(wrd)!=mp.end())
+                string temp=s.substr(j,wordLen);
+                if(mp.find(temp)==mp.end())
                 {
-                    tmp[wrd]++;
-                    found++;
-                    while(tmp[wrd]>mp[wrd])
-                    {
-                        tmp[s.substr(left,w)]--;
-                        found--;
-                        left+=w;
-                    }
-                    if(found==n)
-                        ans.push_back(left);
+                    break;
                 }
-                else
+                freq[temp]++;
+                if(freq[temp]>mp[temp])
                 {
-                    found=0;
-                    left=j+w;
-                    tmp.clear();
+                    break;
                 }
+            }
+            if(freq==mp)
+            {
+                ans.push_back(i);
             }
         }
         return ans;
