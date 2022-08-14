@@ -41,3 +41,52 @@ public:
         return ans;
     }
 };
+=================================================================================================================
+class Solution {
+public:
+    vector<int> findSubstring(string s, vector<string>& words) {
+        int n=words.size();
+        int w=words[0].size();
+        unordered_map<string,int>mp;
+        unordered_map<string,int>tmp;
+        
+        if(n*w>s.length())
+            return {};
+        
+        vector<int>ans;
+        
+        for(auto word: words)
+            mp[word]++;
+        
+        for(int i=0;i<w;i++)
+        {
+            tmp.clear();
+            int found=0;
+            int left=i;
+            for(int j=i;j<=s.length()-w;j+=w)
+            {
+                string wrd=s.substr(j,w);
+                if(mp.find(wrd)!=mp.end())
+                {
+                    tmp[wrd]++;
+                    found++;
+                    while(tmp[wrd]>mp[wrd])
+                    {
+                        tmp[s.substr(left,w)]--;
+                        found--;
+                        left+=w;
+                    }
+                    if(found==n)
+                        ans.push_back(left);
+                }
+                else
+                {
+                    found=0;
+                    left=j+w;
+                    tmp.clear();
+                }
+            }
+        }
+        return ans;
+    }
+};
